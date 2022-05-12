@@ -16,6 +16,7 @@ public class DbConnector {
         try {
             Class.forName("org.sqlite.JDBC");
             Connection con = DriverManager.getConnection("jdbc:sqlite:src/DataBase/Bankdb.db");
+          
             return con;
         }
         catch (ClassNotFoundException e){
@@ -24,9 +25,8 @@ public class DbConnector {
         }
         catch (SQLException ex){
             System.out.println("SQL EXCEPTION [" +ex+"]");
-        }
-
-        System.out.println("SUCCESSFULLY CONNECTION");
+        } 
+        System.out.println("Connection Failed"); 
         return null;
     }
 

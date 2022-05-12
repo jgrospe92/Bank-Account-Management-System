@@ -3,22 +3,20 @@ package Model;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TellersModel {
-    
-    private static int tellerId;
-    private static String username;
-    private static int password;
-    private static String firstName;
-    private static String lastName;
-    private static Date lastLogin;
 
-    // NOTE: SINGLETON ?
-    private static TellersModel tellerInstance = null;
+    private int tellerId;
+    private String username;
+    private int password;
+    private String firstName;
+    private String lastName;
+    private Date lastLogin;
 
-    // NOTE: Teller is static
-
-    public TellersModel(ResultSet rs) throws SQLException{
+    // NOTE: Takes ResultSet
+    public TellersModel(ResultSet rs) throws SQLException {
         this.tellerId = rs.getInt("TellerId");
         this.username = rs.getString("Username");
         this.password = rs.getInt("Password");
@@ -27,54 +25,69 @@ public class TellersModel {
         this.lastLogin = rs.getDate("LastLogin");
 
     }
+    // NOTE: Takes user input
+    public TellersModel(int tellerId, String username, int password, String firstName, String lastName,
+            Date lastLogin) {
+        this.tellerId = tellerId;
+        this.username = username;
+        this.password = password;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.lastLogin = lastLogin;
+    }
 
-    public static int getTellerId() {
+    public int getTellerId() {
         return tellerId;
     }
 
-    public static void setTellerId(int tellerId) {
-        TellersModel.tellerId = tellerId;
+    public void setTellerId(int tellerId) {
+        this.tellerId = tellerId;
     }
 
-    public static String getUsername() {
+    public String getUsername() {
         return username;
     }
 
-    public static void setUsername(String username) {
-        TellersModel.username = username;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
-    public static int getPassword() {
+    public int getPassword() {
         return password;
     }
 
-    public static void setPassword(int password) {
-        TellersModel.password = password;
+    public void setPassword(int password) {
+        this.password = password;
     }
 
-    public static String getFirstName() {
+    public String getFirstName() {
         return firstName;
     }
 
-    public static void setFirstName(String firstName) {
-        TellersModel.firstName = firstName;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 
-    public static String getLastName() {
+    public String getLastName() {
         return lastName;
     }
 
-    public static void setLastName(String lastName) {
-        TellersModel.lastName = lastName;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
-    public static Date getLastLogin() {
+    public Date getLastLogin() {
         return lastLogin;
     }
 
-    public static void setLastLogin(Date lastLogin) {
-        TellersModel.lastLogin = lastLogin;
+    public void setLastLogin(Date lastLogin) {
+        this.lastLogin = lastLogin;
     }
 
-    
+    @Override
+    public String toString() {
+        return "TellersModel [firstName=" + firstName + ", lastLogin=" + lastLogin + ", lastName=" + lastName
+                + ", password=" + password + ", tellerId=" + tellerId + ", username=" + username + "]";
+    }
+
 }

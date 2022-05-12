@@ -27,7 +27,7 @@ public class AccountsModel {
     public AccountsModel(int accountNumber, int clientId, String accountType, Date openDate, int balance,
             boolean isActive) {
         AccountNumber = accountNumber;
-        ClientId = clientId;
+        this.ClientId = clientId;
         this.accountType = accountType;
         this.openDate = openDate;
         this.balance = balance;
