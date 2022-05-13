@@ -10,24 +10,23 @@ import java.sql.Statement;
 
 public class DbConnector {
     
+    private static Connection con;
     // Singleton class
     public static Connection createConnection(){
-
-        try {
-            Class.forName("org.sqlite.JDBC");
-            Connection con = DriverManager.getConnection("jdbc:sqlite:src/DataBase/Bankdb.db");
-          
-            return con;
+        if(con == null){
+            try {
+                Class.forName("org.sqlite.JDBC");
+                con = DriverManager.getConnection("jdbc:sqlite:src/DataBase/Bankdb.db");
+            }
+            catch (ClassNotFoundException e){
+                System.out.println("SQL DRIVER IS NOT FOUND [" +e+"]");
+                System.exit(0);
+            }
+            catch (SQLException ex){
+                System.out.println("SQL EXCEPTION [" +ex+"]");
+            } 
         }
-        catch (ClassNotFoundException e){
-            System.out.println("SQL DRIVER IS NOT FOUND [" +e+"]");
-            System.exit(0);
-        }
-        catch (SQLException ex){
-            System.out.println("SQL EXCEPTION [" +ex+"]");
-        } 
-        System.out.println("Connection Failed"); 
-        return null;
+        return con;
     }
 
 }

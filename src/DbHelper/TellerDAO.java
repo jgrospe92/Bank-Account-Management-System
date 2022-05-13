@@ -9,10 +9,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import Model.TellersModel;
+
 public class TellerDAO {
-
-
-   
 
     public static TellersModel getTellerById(int tellerId) {
         try {
@@ -65,7 +63,9 @@ public class TellerDAO {
             PreparedStatement stmt = con.prepareStatement(sql);
             ResultSet rs = stmt.executeQuery();
             while(rs.next()) {
-                System.out.println(rs.getString(2));
+                teller = new TellersModel(rs);
+                System.out.println("DATE: " + rs.getString("LastLogin"));
+                tellers.add(teller);
             }
         } catch (SQLException e) {
             System.out.println("Error retrieving Teller data [" + e.getMessage() + "]");
@@ -113,11 +113,29 @@ public class TellerDAO {
             stmt.setString(1, getDateTime());
             stmt.setInt(2, id);
             stmt.executeUpdate();
-            stmt.close();
+            
         }
         catch (SQLException e){
             System.out.println("Error updating last login date [" + e.getMessage() + "]");
         }
+
+    }
+
+    public  static String getFormatedDate(int id){
+        String formattedDate = "";
+        try {
+            Connection con = DbConnector.createConnection();
+            String sql = "SELECT LastLogin FROM Teller"+
+                        " WHERE TellerId =?";
+            PreparedStatement stmt = con.prepareStatement(sql);
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
+            formattedDate = rs.getString("LastLogin");
+        }
+        catch (SQLException e){
+            System.out.println("Error retrieving  last login date [" + e.getMessage() + "]");
+        }
+        return formattedDate;
 
     }
     private static String getDateTime(){
@@ -129,6 +147,7 @@ public class TellerDAO {
 
     // DEBUG:
     public static void main(String[] args) {
+        getTellerByUserAndPass("jgrospe", 1234);
         updateLoginDate(1111);
     }   
 }

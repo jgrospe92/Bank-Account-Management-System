@@ -44,5 +44,9 @@ public class TellerController {
         TellerDAO.updateLoginDate(id);
     }
 
+    public String getTellerLastLoginDate(int id){
+        return TellerDAO.getFormatedDate(id);
+    }
+
 
 }
