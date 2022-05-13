@@ -27,6 +27,17 @@ public class ClientsModel {
 
     }
 
+    public ClientsModel(int id, String firstName, String lastName, String identification, String address) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.identification = identification;
+        this.address = address;
+        this.accounts = new ArrayList<>();
+    }
+
+
+
     public int getId() {
         return id;
     }

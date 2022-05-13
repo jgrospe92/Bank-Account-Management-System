@@ -1,5 +1,6 @@
 package Model;
 
+
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -8,26 +9,26 @@ public class AccountsModel {
 
    
 
-    private int AccountNumber;
-    private int ClientId; // NOTE: FR key
+    private int accountNumber;
+    private int clientId; // NOTE: FR key
     private String accountType;
     private Date openDate;
     private int balance;
     private boolean isActive;
 
     public AccountsModel(ResultSet rs) throws SQLException {
-        this.AccountNumber = rs.getInt("AccountNumber");
-        this.ClientId = rs.getInt("ClientId");
+        this.accountNumber = rs.getInt("AccountNumber");
+        this.clientId = rs.getInt("ClientId");
         this.accountType = rs.getString("AccountType");
-        this.openDate = rs.getDate("OpenData");
+        this.openDate = rs.getDate("OpenDate");
         this.balance = rs.getInt("Balance");
         this.isActive = rs.getBoolean("IsActive");
     }
 
     public AccountsModel(int accountNumber, int clientId, String accountType, Date openDate, int balance,
             boolean isActive) {
-        AccountNumber = accountNumber;
-        this.ClientId = clientId;
+        this.accountNumber = accountNumber;
+        this.clientId = clientId;
         this.accountType = accountType;
         this.openDate = openDate;
         this.balance = balance;
@@ -35,19 +36,19 @@ public class AccountsModel {
     }
 
     public int getAccountNumber() {
-        return AccountNumber;
+        return accountNumber;
     }
 
     public void setAccountNumber(int accountNumber) {
-        AccountNumber = accountNumber;
+        accountNumber = accountNumber;
     }
 
     public int getClientId() {
-        return ClientId;
+        return clientId;
     }
 
     public void setClientId(int clientId) {
-        ClientId = clientId;
+        clientId = clientId;
     }
 
     public String getAccountType() {
@@ -84,7 +85,7 @@ public class AccountsModel {
 
     @Override
     public String toString() {
-        return "AccountsModel [AccountNumber=" + AccountNumber + ", ClientId=" + ClientId + ", accountType="
+        return "AccountsModel [AccountNumber=" + accountNumber + ", ClientId=" + clientId + ", accountType="
                 + accountType + ", balance=" + balance + ", isActive=" + isActive + ", openDate=" + openDate + "]";
     }
 }

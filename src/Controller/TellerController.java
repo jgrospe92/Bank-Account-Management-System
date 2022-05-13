@@ -1,11 +1,6 @@
 package Controller;
 
-import java.sql.Date;
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Locale;
 
 import DbHelper.TellerDAO;
 import Model.TellersModel;
@@ -45,7 +40,7 @@ public class TellerController {
     }
 
     public String getTellerLastLoginDate(int id){
-        return TellerDAO.getFormatedDate(id);
+        return TellerDAO.getFormattedDate(id);
     }
 
 

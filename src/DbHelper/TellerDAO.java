@@ -64,7 +64,6 @@ public class TellerDAO {
             ResultSet rs = stmt.executeQuery();
             while(rs.next()) {
                 teller = new TellersModel(rs);
-                System.out.println("DATE: " + rs.getString("LastLogin"));
                 tellers.add(teller);
             }
         } catch (SQLException e) {
@@ -113,7 +112,7 @@ public class TellerDAO {
             stmt.setString(1, getDateTime());
             stmt.setInt(2, id);
             stmt.executeUpdate();
-            
+            stmt.close();
         }
         catch (SQLException e){
             System.out.println("Error updating last login date [" + e.getMessage() + "]");
@@ -121,7 +120,7 @@ public class TellerDAO {
 
     }
 
-    public  static String getFormatedDate(int id){
+    public  static String getFormattedDate(int id){
         String formattedDate = "";
         try {
             Connection con = DbConnector.createConnection();
@@ -131,6 +130,7 @@ public class TellerDAO {
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
             formattedDate = rs.getString("LastLogin");
+            stmt.close();
         }
         catch (SQLException e){
             System.out.println("Error retrieving  last login date [" + e.getMessage() + "]");

@@ -6,3 +6,6 @@ Password int NOT NULL,
 FirstName varchar(100) NOT NULL,
 LastName varchar(100) NOT NULL,
 LastLogin DATE NOT NULL);
+
+
+DELETE FROM Clients WHERE ClientId = 1234
