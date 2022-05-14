@@ -18,6 +18,7 @@ import DbHelper.AccountDAO;
 import Model.AccountsModel;
 import Model.ClientsModel;
 import Model.TellersModel;
+import Model.TransactionModel;
 
 public class MainView {
 
@@ -134,7 +135,7 @@ public class MainView {
             case 3 -> viewClient();
             case 4 -> doTransaction();
             case 5 -> {tellerLogin(); clientMenu();}
-            case 6 -> print("ALL TRANSACTION");
+            case 6 -> viewAllTransaction();
             case 7 -> logout();
             default -> {
                 print("INVALID INPUT\n");
@@ -172,6 +173,8 @@ public class MainView {
             AccountsModel account =  addAccount(id);
             client.addAccount(account);
             cc.createOrUpdateClient(client);
+            print("NEW CLIENT ADDED, REDIRECTING TO THE MAIN MENU\n");
+            clientMenu();
             
         } else {
             print("REDIRECTING TO THE MAIN MENU\n");
@@ -375,6 +378,7 @@ public class MainView {
     }
 
     // NOTE: CREATE TRANSACTION
+    // TODO: MAKE THE REST SIMILAR TO THE GO BACK FUNCTION
     private void doTransaction(){
         String str = """
             ====================================
@@ -387,6 +391,7 @@ public class MainView {
         ClientsModel client = cc.getClientById(clientId);
         if (client != null){
             Boolean goBack = false;
+            System.out.println("CLIENT NAME : " + client.getFirstName() + " " + client.getLastName());
             while(!goBack){
                 String menuOptions = "PRESS 1 TO WITHDRAW\n"
                 + "PRESS 2 TO DEPOSIT\n"
@@ -401,8 +406,8 @@ public class MainView {
                 switch(choice){
                     case 1 -> withdraw(client);
                     case 2 -> deposit(client);
-                    case 3 -> print("transfer");
-                    case 4 -> print("deactivate");
+                    case 3 -> transferAmount(client);
+                    case 4 -> deactivateAccount(client);
                     case 5 -> {
                         goBack = true;
                     }
@@ -427,16 +432,24 @@ public class MainView {
             if(account.getAccountNumber() == accountNumber){
                 print("CURRENT BALANCE: $" +account.getBalance()+"\n");
                 print("ENTER THE WITHDRAW AMOUNT: ");
-                int withdrawAmount = input.nextInt();
+                int amount = input.nextInt();
+                while(!(isAmountValid(amount))){
+                    print("AMOUNT HAVE TO BE MORE THAN 0\n");
+                    print("ENTER THE RIGHT DEPOSIT AMOUNT: ");
+                    amount = input.nextInt();
+                }
+
+                int withdrawAmount = account.getBalance() - amount;
                 while(!ac.updateAccountBalance(account, withdrawAmount)){
                     print("YOU CURRENT BALANCE IS $" + account.getBalance() +"\n");
                     print("ENTER THE RIGHT WITHDRAW AMOUNT: ");
-                    withdrawAmount = input.nextInt();
+                    amount = input.nextInt();
+                    withdrawAmount = account.getBalance() - amount;
                 }
                 trc.insertWithdrawTransaction(account, withdrawAmount);
                 
 
-                System.out.println("SUCCESSFULLY WITHDRAWN $" +withdrawAmount);
+                System.out.println("SUCCESSFULLY WITHDRAWN $" +amount);
                 System.out.println("YOUR NEW BALANCE IS $" + account.getBalance());
                 hasFoundAccount = true;
                 break;
@@ -451,6 +464,7 @@ public class MainView {
 
     public void deposit(ClientsModel client){
         boolean hasFoundAccount = false;
+        int newBalance = 0;
         print("PLEASE ENTER ACCOUNT NUMBER: ");
         int accountNumber = input.nextInt();
         List<AccountsModel> accounts = ac.showAllAccountOnThisClient(client.getId());
@@ -458,13 +472,21 @@ public class MainView {
             if(account.getAccountNumber() == accountNumber){
                 print("CURRENT BALANCE: $" +account.getBalance()+"\n");
                 print("ENTER THE DEPOSIT AMOUNT: ");
-                int withdrawAmount = input.nextInt();
-                while(!ac.updateAccountBalance(account, withdrawAmount)){
-                    print("YOU CURRENT BALANCE IS $" + account.getBalance() +"\n");
-                    print("ENTER THE RIGHT WITHDRAW AMOUNT: ");
-                    withdrawAmount = input.nextInt();
+                int depositAmount = input.nextInt();
+                while(!(isAmountValid(depositAmount))){
+                    print("AMOUNT HAVE TO BE MORE THAN 0\n");
+                    print("ENTER THE RIGHT DEPOSIT AMOUNT: ");
+                    depositAmount = input.nextInt();
                 }
-                System.out.println("SUCCESSFULLY WITHDRAWN $" +withdrawAmount);
+                newBalance = account.getBalance() + depositAmount;
+                while(!ac.updateAccountBalance(account, newBalance) && depositAmount < 1){
+                    print("YOU CURRENT BALANCE IS $" + account.getBalance() +"\n");
+                    print("ENTER THE RIGHT DEPOSIT AMOUNT: ");
+                    newBalance = account.getBalance() + depositAmount;
+                }
+                trc.insertDepositTransaction(account, depositAmount);
+
+                System.out.println("SUCCESSFULLY DEPOSITED $" +depositAmount);
                 System.out.println("YOUR NEW BALANCE IS $" + account.getBalance());
                 hasFoundAccount = true;
                 break;
@@ -475,6 +497,99 @@ public class MainView {
             print("ACCOUNT NUMBER DOES NOT EXIST! PLEASE TRY AGAIN!\n");
             
         }
+    }
+
+    private void transferAmount(ClientsModel client){
+        boolean hasFoundAccount = false;
+        print("PLEASE ENTER ACCOUNT NUMBER: ");
+        int accountNumber = input.nextInt();
+        List<AccountsModel> accounts = ac.showAllAccountOnThisClient(client.getId());
+        for (AccountsModel account : accounts){
+            if(account.getAccountNumber() == accountNumber){
+                print("PEASE ENTER DESIGNATION ACCOUNT NUMBER: ");
+                int accountNumber2 = input.nextInt();
+                AccountsModel account2 = ac.getAccountByAccountNumber(accountNumber2);
+                while(account2 == null){
+                    print("ACCOUNT DOES NOT EXIT, PLEASE TRY AGAIN\n");
+                    print("PLEASE ENTER DESIGNATION ACCOUNT NUMBER:" );
+                    accountNumber2 = input.nextInt();
+                    account2 = ac.getAccountByAccountNumber(accountNumber2);
+                }
+                print("CURRENT BALANCE: $" +account.getBalance()+"\n");
+                print("ENTER THE AMOUNT TO BE TRANSFER: ");
+                int amount = input.nextInt();
+                while(!isAmountValid(amount) || account.getBalance() < amount){
+                    print("CANNOT TRANSFER 0 OR LESS THAN ACCOUNT BALANCE\n");
+                    print("ENTER THE RIGHT AMOUNT TO BE TRANSFER: ");
+                    amount = input.nextInt();
+                }
+
+                ac.updateAccountBalance(account, account.getBalance() - amount);
+                ac.updateAccountBalance(account2, account2.getBalance() + amount);
+                trc.insertTransferTransaction(account, account2, amount);
+
+                System.out.println("SUCCESSFULLY TRANSFER $" +amount+ " To ACCOUNT NUMBER: " + account2.getAccountNumber());
+                System.out.println("YOUR NEW BALANCE IS $" + account.getBalance());
+                hasFoundAccount = true;
+                break;
+    
+                } 
+        }
+        if (!hasFoundAccount){
+            print("ACCOUNT NUMBER DOES NOT EXIST! PLEASE TRY AGAIN!\n");
+            
+        }
+        
+    }
+
+    public void deactivateAccount(ClientsModel client){
+        boolean hasFoundAccount = false;
+        print("PLEASE ENTER ACCOUNT NUMBER TO DEACTIVATE: ");
+        int accountNumber = input.nextInt();
+        List<AccountsModel> accounts = ac.showAllAccountOnThisClient(client.getId());
+        for (AccountsModel account : accounts){
+            if(account.getAccountNumber() == accountNumber){
+                if(account.getBalance() == 0){
+                    print("ARE YOU SURE YOU WANT TO DEACTIVATE ACCOUNT:(Y/N) ");
+                    if(input.next().equalsIgnoreCase("y")){
+                        account.setActive(false);
+                        ac.createOrUpdateAccount(account);
+                        hasFoundAccount = true;
+                        break;
+                    } 
+                }
+                else {
+                    hasFoundAccount = true;
+                    print("FAILED TO DEACTIVATE\n");
+                    print("ACCOUNT HAS " + account.getBalance() + " REMAINING BALANCE\n");
+                }
+            }
+          
+        }
+        if (!hasFoundAccount){
+            print("ACCOUNT NUMBER DOES NOT EXIST! PLEASE TRY AGAIN!\n");
+            
+        }
+    }
+    public void viewAllTransaction(){
+        String str = """
+            ====================================
+            TRANSACTION REPORT
+            ====================================
+            """;
+        System.out.println(str);
+        trc.getAllTransaction();
+        while(trc.hasNext()){
+            TransactionModel transaction = trc.next();
+            System.out.println("====================================");
+            print("TRANSACTION ID  " + transaction.getTransactionId()+"\n");
+            print("TO ACCOUNT NUMBER: " + transaction.getToAccountNumber()+"\n");
+            print("FROM ACCOUNT NUMBER: " + transaction.getFromAccountNumber()+"\n");
+            print("TRANSACTION DETAIL: " + transaction.getTransactionDetail()+"\n");
+            print("VALUE: " + transaction.getValue()+"\n");
+          
+        }
+        System.out.println("====================================");
     }
 
     // NOTE: UTILITY METHODS
@@ -502,6 +617,11 @@ public class MainView {
         long now = System.currentTimeMillis();
         Date sqlDate = new Date(now);
         return sqlDate;
+    }
+
+    // NOTE: CHECK IF THE DEPOSIT AMOUNT IS ZERO
+    public boolean isAmountValid(int amount){
+      return amount > 0;
     }
 
     // NOTE: Iterate through account

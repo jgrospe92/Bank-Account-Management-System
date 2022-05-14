@@ -25,19 +25,31 @@ public class TransactionController {
     }
 
     public boolean insertWithdrawTransaction(AccountsModel account, int amount){
-
-        TransactionModel transaction = new TransactionModel(transactionId++, 0, 
-        account.getAccountNumber(), account.getAccountType(), amount);
+        transactionId = TransactionDAO.sequenceOnTransactionId();
+        TransactionModel transaction = new TransactionModel(++transactionId, 0, 
+        account.getAccountNumber(), "WITHDRAW", amount);
         return TransactionDAO.insertWithdrawTransaction(transaction);
     }
 
-    public boolean insertDepositTransaction(TransactionModel transaction){
+    public boolean insertDepositTransaction(AccountsModel account, int amount){
+        transactionId = TransactionDAO.sequenceOnTransactionId();
+        TransactionModel transaction = new TransactionModel(++transactionId, account.getAccountNumber(), 
+       0, "DEPOSIT", amount);
         return TransactionDAO.insertDepositTransaction(transaction);
+    }
+
+    public boolean insertTransferTransaction(AccountsModel account, AccountsModel fromAccount , int amount){
+        transactionId = TransactionDAO.sequenceOnTransactionId();
+        TransactionModel transaction = new TransactionModel(++transactionId, account.getAccountNumber(), 
+        fromAccount.getAccountNumber(), "TRANSFER", amount);
+        return TransactionDAO.insertTransferTransaction(transaction);
     }
 
 
     public List<TransactionModel> getAllTransaction(){
         storedTransaction = TransactionDAO.getAllTransaction();
+        // DEBUG:
+        System.out.println(storedTransaction);
         return storedTransaction;
     }
 }
