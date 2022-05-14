@@ -19,4 +19,8 @@ public class AccountController {
     public List<AccountsModel> showAllAccountOnThisClient(int clientId){
         return AccountDAO.getAllAccount(clientId);
     }
+
+    public boolean updateAccountBalance(AccountsModel account, int withdrawAmount){
+        return AccountDAO.updateBalance(account, withdrawAmount);
+    }
 }

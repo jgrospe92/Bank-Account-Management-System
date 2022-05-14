@@ -13,6 +13,7 @@ import javax.swing.text.AbstractDocument.BranchElement;
 import Controller.AccountController;
 import Controller.ClientController;
 import Controller.TellerController;
+import Controller.TransactionController;
 import DbHelper.AccountDAO;
 import Model.AccountsModel;
 import Model.ClientsModel;
@@ -26,6 +27,7 @@ public class MainView {
 
     private ClientController cc = new ClientController();
     private AccountController ac = new AccountController();
+    private TransactionController trc = new TransactionController();
 
     // NOTE: WELCOME UI
     public void printWelcome() {
@@ -120,7 +122,8 @@ public class MainView {
                 + "PRESS 3 TO VIEW CLIENT\n"
                 + "PRESS 4 TO CREATE TRANSACTION\n"
                 + "PRESS 5 TO SWITCH TELLER\n"
-                + "PRESS 6 TO LOGOUT\n"
+                + "PRESS 6 TO VIEW ALL TRANSACTION\n"
+                + "PRESS 7 TO LOGOUT\n"
                 + "ENTER YOUR CHOICE : ";
         System.out.println(str);
         print(menuOptions);
@@ -129,9 +132,10 @@ public class MainView {
             case 1 -> createNewClient();
             case 2 -> modifyExistingClient();
             case 3 -> viewClient();
-            case 4 -> print("PERFORMING TRANSACTIONS");
-            case 5 -> tellerLogin();
-            case 6 -> System.exit(0);
+            case 4 -> doTransaction();
+            case 5 -> {tellerLogin(); clientMenu();}
+            case 6 -> print("ALL TRANSACTION");
+            case 7 -> logout();
             default -> {
                 print("INVALID INPUT\n");
                 isValid = false;
@@ -168,7 +172,6 @@ public class MainView {
             AccountsModel account =  addAccount(id);
             client.addAccount(account);
             cc.createOrUpdateClient(client);
-            //cc.addAccountToClient(client);
             
         } else {
             print("REDIRECTING TO THE MAIN MENU\n");
@@ -208,6 +211,11 @@ public class MainView {
         String accountType = accountType();
         print("ENTER BALANCE AMOUNT: ");
         int balance = input.nextInt();
+        while(balance < 0){
+            print("SORRY, NEGATIVE BALANCE IS NOT ALLOWED\n");
+            print("ENTER BALANCE AMOUNT: ");
+            balance = input.nextInt();
+        }
         boolean isActive = isActive(balance);
         
         account = new AccountsModel(accountNumber, clientId, accountType, getCurrentDate() , balance, isActive);
@@ -239,6 +247,7 @@ public class MainView {
             addDelay(1);
             clientMenu();
         }
+         navigation();
     }
   
     private void modifyExistingClient(){
@@ -263,7 +272,7 @@ public class MainView {
             case 2 -> openNewAccount();
             case 3 -> deleteAccount();
             case 4 -> clientMenu();
-            case 5 -> System.exit(0);
+            case 5 -> logout();
             default -> {
                 System.out.println("INVALID INPUT\n");
                 isValid = false;
@@ -365,6 +374,109 @@ public class MainView {
 
     }
 
+    // NOTE: CREATE TRANSACTION
+    private void doTransaction(){
+        String str = """
+            ====================================
+            T R A N S A C T I O N
+            ====================================
+            """;
+        System.out.println(str);
+        print("PLEASE ENTER CLIENT ID: ");
+        int clientId = input.nextInt();
+        ClientsModel client = cc.getClientById(clientId);
+        if (client != null){
+            Boolean goBack = false;
+            while(!goBack){
+                String menuOptions = "PRESS 1 TO WITHDRAW\n"
+                + "PRESS 2 TO DEPOSIT\n"
+                + "PRESS 3 TO TRANSFER\n"
+                + "PRESS 4 TO DEACTIVATE\n"
+                + "PRESS 5 TO TO BACK TO THE PREVIOUS MENU\n"
+                + "PRESS 6 TO LOGOUT\n"
+                + "ENTER YOUR CHOICE : ";
+                System.out.println("====================================");
+                print(menuOptions);
+                int choice = input.nextInt();
+                switch(choice){
+                    case 1 -> withdraw(client);
+                    case 2 -> deposit(client);
+                    case 3 -> print("transfer");
+                    case 4 -> print("deactivate");
+                    case 5 -> {
+                        goBack = true;
+                    }
+                    case 6 -> logout();
+                }
+            }
+           
+        } else {
+            print("CLIENT DOES NOT EXIST...TRY AGAIN!\n");
+            addDelay(1);
+            doTransaction();
+        }
+        clientMenu();
+    }
+
+    public void withdraw(ClientsModel client){
+        boolean hasFoundAccount = false;
+        print("PLEASE ENTER ACCOUNT NUMBER: ");
+        int accountNumber = input.nextInt();
+        List<AccountsModel> accounts = ac.showAllAccountOnThisClient(client.getId());
+        for (AccountsModel account : accounts){
+            if(account.getAccountNumber() == accountNumber){
+                print("CURRENT BALANCE: $" +account.getBalance()+"\n");
+                print("ENTER THE WITHDRAW AMOUNT: ");
+                int withdrawAmount = input.nextInt();
+                while(!ac.updateAccountBalance(account, withdrawAmount)){
+                    print("YOU CURRENT BALANCE IS $" + account.getBalance() +"\n");
+                    print("ENTER THE RIGHT WITHDRAW AMOUNT: ");
+                    withdrawAmount = input.nextInt();
+                }
+                trc.insertWithdrawTransaction(account, withdrawAmount);
+                
+
+                System.out.println("SUCCESSFULLY WITHDRAWN $" +withdrawAmount);
+                System.out.println("YOUR NEW BALANCE IS $" + account.getBalance());
+                hasFoundAccount = true;
+                break;
+    
+                } 
+        }
+        if (!hasFoundAccount){
+            print("ACCOUNT NUMBER DOES NOT EXIST! PLEASE TRY AGAIN!\n");
+            
+        }
+    }
+
+    public void deposit(ClientsModel client){
+        boolean hasFoundAccount = false;
+        print("PLEASE ENTER ACCOUNT NUMBER: ");
+        int accountNumber = input.nextInt();
+        List<AccountsModel> accounts = ac.showAllAccountOnThisClient(client.getId());
+        for (AccountsModel account : accounts){
+            if(account.getAccountNumber() == accountNumber){
+                print("CURRENT BALANCE: $" +account.getBalance()+"\n");
+                print("ENTER THE DEPOSIT AMOUNT: ");
+                int withdrawAmount = input.nextInt();
+                while(!ac.updateAccountBalance(account, withdrawAmount)){
+                    print("YOU CURRENT BALANCE IS $" + account.getBalance() +"\n");
+                    print("ENTER THE RIGHT WITHDRAW AMOUNT: ");
+                    withdrawAmount = input.nextInt();
+                }
+                System.out.println("SUCCESSFULLY WITHDRAWN $" +withdrawAmount);
+                System.out.println("YOUR NEW BALANCE IS $" + account.getBalance());
+                hasFoundAccount = true;
+                break;
+    
+                } 
+        }
+        if (!hasFoundAccount){
+            print("ACCOUNT NUMBER DOES NOT EXIST! PLEASE TRY AGAIN!\n");
+            
+        }
+    }
+
     // NOTE: UTILITY METHODS
 
     // NOTE: PRINT DATA
@@ -403,6 +515,38 @@ public class MainView {
             System.out.println("IS ACTIVE: " + account.isActive());
             System.out.println("====================================");
         }
+    }
+    // NOTE: NAVIGATION
+    public void navigation(){
+        String msg = "PRESS 1 PREVIOUS MENU\n"
+        +"PRESS 2 LOGOUT\n"
+        +"ENTER YOUR CHOICE: ";
+        print(msg);
+        int option = 0;
+        try {
+            option = input.nextInt();
+            switch(option){
+                case 1 -> clientMenu();
+                case 2 -> logout();
+                default -> {
+                    print("INVALID INPUT, TRY AGAIN");
+                    navigation();
+                }
+            }
+            
+        }
+        catch (Exception e){
+            System.out.println("INVALID INPUT! TRY AGAIN!");
+            print("\n");
+            navigation();
+        }
+        
+        
+    }
+
+    private void logout(){
+        System.out.println("SIGNING OFF!, HAVE A GREAT DAY!");
+        System.exit(0);
     }
 
     public static void main(String[] args) {

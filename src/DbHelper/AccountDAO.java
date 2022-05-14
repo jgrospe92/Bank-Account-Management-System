@@ -33,6 +33,41 @@ public class AccountDAO {
      
     }
 
+    public static boolean updateBalance(AccountsModel account, int withdrawAmount){
+        if (account == null) {return true;}
+        Connection con = DbConnector.createConnection();
+        int newBalance = account.getBalance() - withdrawAmount;
+        System.out.println(newBalance);
+        try{
+            con.setAutoCommit(false);
+
+            String sql = "UPDATE Accounts SET Balance = ? WHERE AccountNumber = ?";
+            PreparedStatement stmt = con.prepareStatement(sql);
+            stmt.setInt(2, account.getAccountNumber());
+           if (newBalance >= 0){
+                account.setBalance(newBalance);
+                stmt.setInt(1, newBalance);
+                stmt.executeUpdate();
+                stmt.close();
+                con.commit();
+                return true;
+            }
+            else {
+                try {
+                    con.rollback();
+                    System.out.println("ACCOUNT BALANCE CANNOT BE NEGATIVE");
+                    System.out.println("ROLLING BACK CHANGES");
+                } catch (SQLException ex) {
+                    System.out.println("Error rolling back [" + ex.getMessage() + "]");
+                }
+            }
+          
+        } catch (SQLException e) {
+            System.out.println("Error retrieving account when saving or updating [" + e.getMessage() + "]");
+        }
+        return false;
+    }
+
     public static boolean saveOrUpdateAccount(AccountsModel account){
         if (account == null) {return true;}
         Connection con = DbConnector.createConnection();
