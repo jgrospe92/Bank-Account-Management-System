@@ -3,9 +3,12 @@ package View;
 
 import java.sql.Date;
 import java.text.SimpleDateFormat;
+import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.SimpleFormatter;
+
+import javax.swing.text.AbstractDocument.BranchElement;
 
 import Controller.AccountController;
 import Controller.ClientController;
@@ -114,11 +117,10 @@ public class MainView {
 
         String menuOptions = "PRESS 1 TO CREATE NEW CLIENT\n"
                 + "PRESS 2 TO MODIFY EXISTING CLIENT\n"
-                + "PRESS 3 TO VIEW CLIENT"
+                + "PRESS 3 TO VIEW CLIENT\n"
                 + "PRESS 4 TO CREATE TRANSACTION\n"
-                + "PRESS 5 TO DEACTIVATE CLIENT ACCOUNT\n"
-                + "PRESS 6 TO SWITCH TELLER\n"
-                + "PRESS 7 TO LOGOUT\n"
+                + "PRESS 5 TO SWITCH TELLER\n"
+                + "PRESS 6 TO LOGOUT\n"
                 + "ENTER YOUR CHOICE : ";
         System.out.println(str);
         print(menuOptions);
@@ -126,11 +128,10 @@ public class MainView {
         switch (opt) {
             case 1 -> createNewClient();
             case 2 -> modifyExistingClient();
-            case 3 -> print("VIEW CLIENT");
+            case 3 -> viewClient();
             case 4 -> print("PERFORMING TRANSACTIONS");
-            case 5 -> print("DEACTIVATING CLIENT ACCOUNT");
-            case 6 -> print("SWITCHING TELLER");
-            case 7 -> System.exit(0);
+            case 5 -> tellerLogin();
+            case 6 -> System.exit(0);
             default -> {
                 print("INVALID INPUT\n");
                 isValid = false;
@@ -212,6 +213,33 @@ public class MainView {
         account = new AccountsModel(accountNumber, clientId, accountType, getCurrentDate() , balance, isActive);
         return account;
     }
+
+    // NOTE: VIEW CLIENT
+    public void viewClient(){
+        String str = """
+            ====================================
+            CLIENT DETAILS
+            ====================================
+            """;
+        System.out.println(str);
+        print("PLEASE ENTER CLIENT ID: ");
+        int clientId = input.nextInt();
+        ClientsModel client = cc.getClientById(clientId);
+        if(client != null){
+            print("====================================\n");
+            System.out.println("CLIENT ID: " + client.getId());
+            System.out.println("FIRST NAME: " + client.getFirstName());
+            System.out.println("LAST NAME: " + client.getLastName());
+            System.out.println("IDENTIFICATION: " + client.getIdentification());
+            System.out.println("ADDRESS: " + client.getAddress());
+            List<AccountsModel> accounts = ac.showAllAccountOnThisClient(clientId);
+            iterateAccountList(accounts);
+        }else {
+            print("CLIENT DOES NOT EXIST...TRY AGAIN!\n");
+            addDelay(1);
+            clientMenu();
+        }
+    }
   
     private void modifyExistingClient(){
         boolean isValid = true;
@@ -233,7 +261,7 @@ public class MainView {
         switch (opt){
             case 1 -> updateClientInfo();
             case 2 -> openNewAccount();
-            case 3 -> print("DEACTIVATE ACCOUNT");
+            case 3 -> deleteAccount();
             case 4 -> clientMenu();
             case 5 -> System.exit(0);
             default -> {
@@ -288,11 +316,53 @@ public class MainView {
             modifyExistingClient();
         }
         else{
-            print("CLIENT DOES NOT EXIST...TRY AGAIN\n!");
+            print("CLIENT DOES NOT EXIST...TRY AGAIN!\n");
             addDelay(1);
             updateClientInfo();
         }
        
+    }
+
+    private void deleteAccount(){
+        print("PLEASE ENTER CLIENT ID: ");
+        int clientId = input.nextInt();
+        ClientsModel client = cc.getClientById(clientId);
+        if(client != null){
+            print("WARNING! ONLY ACCOUNT WITH 0 BALANCE CAN BE DEACTIVATED\n");
+            List<AccountsModel> accounts = ac.showAllAccountOnThisClient(clientId);
+            iterateAccountList(accounts);
+            
+            print("PLEASE ENTER ACCOUNT NUMBER TO DEACTIVATE: ");
+            int accountNumber = input.nextInt();
+            boolean hasFoundAccount = false;
+            //REFACTOR:
+            for (AccountsModel account : accounts){
+                if(account.getAccountNumber() == accountNumber){
+                    if (account.getBalance() == 0){
+                        account.setActive(false);
+                        ac.createOrUpdateAccount(account);
+                        hasFoundAccount = true;
+                        break;
+                    }else{
+                        print("FAILED TO DEACTIVATE\n");
+                        print("ACCOUNT HAS " + account.getBalance() + " REMAINING BALANCE\n");
+                        break;
+                    }
+                }
+            }
+            if (!hasFoundAccount){
+                print("ACCOUNT NUMBER DOES NOT EXIST! PLEASE TRY AGAIN!\n");
+                deleteAccount();
+            }
+
+            modifyExistingClient();
+        }
+        else{
+            print("CLIENT DOES NOT EXIST...TRY AGAIN!\n");
+            addDelay(1);
+            modifyExistingClient();
+        }
+
     }
 
     // NOTE: UTILITY METHODS
@@ -321,6 +391,20 @@ public class MainView {
         Date sqlDate = new Date(now);
         return sqlDate;
     }
+
+    // NOTE: Iterate through account
+    private void iterateAccountList(List<AccountsModel> accounts){
+        for (AccountsModel account : accounts){
+            System.out.println("====================================");
+            System.out.println("ACCOUNT #: " + account.getAccountNumber());
+            System.out.println("ACCOUNT TYPE: " + account.getAccountType());
+            System.out.println("DATE OPENED: " + account.getOpenDate());
+            System.out.println("BALANCE: " + account.getBalance());
+            System.out.println("IS ACTIVE: " + account.isActive());
+            System.out.println("====================================");
+        }
+    }
+
     public static void main(String[] args) {
 
         MainView v = new MainView();

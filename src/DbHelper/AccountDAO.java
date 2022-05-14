@@ -74,7 +74,40 @@ public class AccountDAO {
         }
     }
 
- 
+    public static List<AccountsModel> getAllAccount(Integer clientId){
+        if (clientId == null) {return null;}
+        List<AccountsModel> result = new ArrayList<>();
+        Connection con = DbConnector.createConnection();
+        try {
+            con.setAutoCommit(false);
+            String sql = "SELECT accountNumber, A.ClientId, accountType, openDate, balance, isActive "
+                        +"FROM Accounts A JOIN Clients C ON A.ClientId = C.ClientId "
+                        +"WHERE A.clientId=?";
+            PreparedStatement stmt = con.prepareStatement(sql);
+            stmt.setInt(1, clientId);
+            ResultSet rs = stmt.executeQuery();
+            while(rs.next()){
+                AccountsModel account = new AccountsModel(rs);
+                result.add(account);
+            }
+            stmt.close();
+            con.commit();
+            return result;
+        }catch (SQLException e){
+            System.out.println("Error retrieving accounts Data [" + e.getMessage() + "]");
+            try {
+                con.rollback();
+                System.out.println("ROLLING BACK CHANGES");
+            } catch (SQLException ex) {
+                System.out.println("Error rolling back [" + ex.getMessage() + "]");
+            }
+            return null;
+         
+        }
+        
+    }
+
+    
 
     public static String getDateTime(){
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("YYYY-MM-dd HH:mm:ss");

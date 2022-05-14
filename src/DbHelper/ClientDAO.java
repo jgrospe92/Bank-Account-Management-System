@@ -81,23 +81,17 @@ public class ClientDAO {
         }
     }
 
-    public static void addAccount(ClientsModel client){
-        
-        for (AccountsModel account : client.getAccounts()){
-            AccountDAO.saveOrUpdateAccount(account);
-        }
-    }
-
     public static List<ClientsModel> getAllAccounts(){
+
         List<ClientsModel> result = new ArrayList<>();
 
         try {
             Connection con = DbConnector.createConnection();
             ClientsModel client = null;
-            String sql = "SELECT c.clinetId AS ClientId, c.firstName AS FirstName, c.lastNamem AS LastName"
-                    + "c.identification AS Identification, c.address AS Address,"
-                    + "a.accountNumber AS AccountNumber, a.accountType AS AccountType, a.openDate AS OpenDate"
-                    + "a.balance AS Balance, a.isActive as IsActive"
+            String sql = "SELECT c.clientId AS ClientId, c.firstName AS FirstName, c.lastNamem AS LastName, "
+                    + "c.identification AS Identification, c.address AS Address, "
+                    + "a.accountNumber AS AccountNumber, a.accountType AS AccountType, a.openDate AS OpenDate, "
+                    + "a.balance AS Balance, a.isActive as IsActive, "
                     + "FROM Clients c INNER JOIN Accounts a ON c.clinetId=p.clientId ORDER BY 1";
             PreparedStatement stmt = con.prepareStatement(sql);
             ResultSet rs = stmt.executeQuery();

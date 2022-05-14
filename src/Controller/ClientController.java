@@ -29,12 +29,12 @@ public class ClientController {
         ClientDAO.saveOrUpdateClient(client);
     }
 
-    public void addAccountToClient(ClientsModel client){
-        ClientDAO.addAccount(client);
-    }
-
     public void fetchAllAccounts(){
         accounts = ClientDAO.getAllAccounts();
+    }
+
+    public List<ClientsModel> getClientAccounts(){
+        return accounts;
     }
     
 }
