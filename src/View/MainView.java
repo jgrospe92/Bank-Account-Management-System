@@ -1,14 +1,10 @@
 package View;
 
-
 import java.sql.Date;
-import java.text.SimpleDateFormat;
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.SimpleFormatter;
-
-import javax.swing.text.AbstractDocument.BranchElement;
 
 import Controller.AccountController;
 import Controller.ClientController;
@@ -32,11 +28,11 @@ public class MainView {
 
     // NOTE: WELCOME UI
     public void printWelcome() {
-        String welcome = """
-                ###################################################
-                #       WELCOME TO JG BANKING SYSTEM              #
-                ###################################################
-                            """;
+        String welcomeVar = "WELCOME TO JG BANKING SYSTEM";
+        String welcome = ""
+                + "##################################\n"
+                + welcomeVar + "\n"
+                + "##################################\n";
         print(welcome);
 
     }
@@ -46,19 +42,19 @@ public class MainView {
         int opt = 0;
         String language = "";
 
-        String languageOption = """
-                Choose your language:
-                Press 1 to continue in English
-                Press 2 to continue in French
-                Enter your choice:
-                """;
+        String languageOption = ""
+                + "Choose your language:\n"
+                + "Press 1 to continue in English\n"
+                + "Press 2 to continue in French\n"
+                + "Enter your choice:\n";
+
         print(languageOption);
-        opt = input.nextInt();
+        opt = isANumber();
 
         while (opt != 1 && opt != 2) {
-            print("Invalid input, Please enter again\n");
+            print("INVALID INPUT, PLEASE ENTER AGAIN\n");
             print(languageOption);
-            opt = input.nextInt();
+            opt = isANumber();
         }
         language = (opt == 1) ? "English" : "French";
         print("Continuing in " + language + " ...\n");
@@ -72,30 +68,30 @@ public class MainView {
 
         String username;
         int password;
-        String str = """
-                ====================================
-                TELLER LOGIN:
-                ====================================
-                """;
+        String str = ""
+                + "====================================\n"
+                + "TELLER LOGIN:\n"
+                + "====================================\n";
+
         print(str);
         print("ENTER USERNAME: ");
         username = input.next();
         print("ENTER Password: ");
-        password = input.nextInt();
+        password = isANumber();
 
         currentTeller = tc.verifyLogin(username, password);
         while (currentTeller == null && attempts > 0) {
 
-            print("WARNING: Teller Does not Exist. " + (attempts--) + " remaining attempts.\n");
-            print("ENTER USERNAME:");
+            print("WARNING: TELLER DOES NOT EXIST. " + (attempts--) + " REMAINING ATTEMPTS.\n");
+            print("ENTER USERNAME: ");
             username = input.next();
-            print("ENTER Password: ");
-            password = input.nextInt();
+            print("ENTER PASSWORD: ");
+            password = isANumber();
             currentTeller = tc.verifyLogin(username, password);
         }
         if (attempts < 1) {
-            print("INVALID CREDENTIALS, Please try again next time");
-            System.exit(0);
+            print("INVALID CREDENTIALS, PLEASE TRY AGAIN NEXT TIME");
+            logout();
         }
 
         loginSuccess();
@@ -112,39 +108,43 @@ public class MainView {
     private void clientMenu() {
         int opt = 0;
         boolean isValid = true;
-        String str = """
-                ====================================
-                M A I N - M E NU
-                ====================================
-                """;
-
-        String menuOptions = "PRESS 1 TO CREATE NEW CLIENT\n"
-                + "PRESS 2 TO MODIFY EXISTING CLIENT\n"
-                + "PRESS 3 TO VIEW CLIENT\n"
-                + "PRESS 4 TO CREATE TRANSACTION\n"
-                + "PRESS 5 TO SWITCH TELLER\n"
-                + "PRESS 6 TO VIEW ALL TRANSACTION\n"
-                + "PRESS 7 TO LOGOUT\n"
-                + "ENTER YOUR CHOICE : ";
-        System.out.println(str);
-        print(menuOptions);
-        opt = input.nextInt();
-        switch (opt) {
-            case 1 -> createNewClient();
-            case 2 -> modifyExistingClient();
-            case 3 -> viewClient();
-            case 4 -> doTransaction();
-            case 5 -> {tellerLogin(); clientMenu();}
-            case 6 -> viewAllTransaction();
-            case 7 -> logout();
-            default -> {
-                print("INVALID INPUT\n");
-                isValid = false;
+        boolean goBack = false;
+        String str = ""
+                + "====================================\n"
+                + "M A I N - M E NU\n"
+                + "====================================\n";
+        while (!goBack) {
+            String menuOptions = "PRESS 1 TO CREATE NEW CLIENT\n"
+                    + "PRESS 2 TO MODIFY EXISTING CLIENT\n"
+                    + "PRESS 3 TO VIEW CLIENT\n"
+                    + "PRESS 4 TO CREATE TRANSACTION\n"
+                    + "PRESS 5 TO SWITCH TELLER\n"
+                    + "PRESS 6 TO VIEW ALL TRANSACTION\n"
+                    + "PRESS 7 TO LOGOUT\n"
+                    + "ENTER YOUR CHOICE : ";
+            System.out.println(str);
+            print(menuOptions);
+            opt = isANumber();
+            switch (opt) {
+                case 1 -> createNewClient();
+                case 2 -> modifyExistingClient();
+                case 3 -> viewClient();
+                case 4 -> doTransaction();
+                case 5 -> goBack = true;
+                case 6 -> viewAllTransaction();
+                case 7 -> logout();
+                default -> {
+                    print("INVALID INPUT\n");
+                    isValid = false;
+                }
             }
         }
+
         if (!isValid) {
             clientMenu();
         }
+        tellerLogin();
+        clientMenu();
     }
 
     private void createNewClient() {
@@ -170,36 +170,38 @@ public class MainView {
         print("WOULD YOU LIKE TO OPEN AN ACCOUNT NOW? (Y/N)");
         String answer = input.next();
         if ("Y".equals(answer.toUpperCase())) {
-            AccountsModel account =  addAccount(id);
+            AccountsModel account = addAccount(id);
             client.addAccount(account);
             cc.createOrUpdateClient(client);
             print("NEW CLIENT ADDED, REDIRECTING TO THE MAIN MENU\n");
             clientMenu();
-            
+
         } else {
             print("REDIRECTING TO THE MAIN MENU\n");
             cc.createOrUpdateClient(client);
             clientMenu();
         }
-        
+
     }
+
     // NOTE: RETURNS ACCOUNT TYPE
-    private String accountType(){
+    private String accountType() {
         String str = """
-                    PRESS 1 FOR SAVING
-                    PRESS 2 FOR CHECKING
-                    PRESS 3 FOR INVESTMENT
-                    ENTER YOUR CHOICE :                 
-                    """;
+                PRESS 1 FOR SAVING
+                PRESS 2 FOR CHECKING
+                PRESS 3 FOR INVESTMENT
+                ENTER YOUR CHOICE :
+                """;
         print(str);
         int opt = input.nextInt();
-        return switch(opt){
+        return switch (opt) {
             case 1 -> "SAVING";
             case 2 -> "CHECKING";
             case 3 -> "INVESTMENT";
             default -> "";
         };
     }
+
     // NOTE: ADD ACCOUNT
     private AccountsModel addAccount(int clientId) {
         AccountsModel account = null;
@@ -214,29 +216,29 @@ public class MainView {
         String accountType = accountType();
         print("ENTER BALANCE AMOUNT: ");
         int balance = input.nextInt();
-        while(balance < 0){
+        while (balance < 0) {
             print("SORRY, NEGATIVE BALANCE IS NOT ALLOWED\n");
             print("ENTER BALANCE AMOUNT: ");
             balance = input.nextInt();
         }
         boolean isActive = isActive(balance);
-        
-        account = new AccountsModel(accountNumber, clientId, accountType, getCurrentDate() , balance, isActive);
+
+        account = new AccountsModel(accountNumber, clientId, accountType, getCurrentDate(), balance, isActive);
         return account;
     }
 
     // NOTE: VIEW CLIENT
-    public void viewClient(){
+    public void viewClient() {
         String str = """
-            ====================================
-            CLIENT DETAILS
-            ====================================
-            """;
+                ====================================
+                CLIENT DETAILS
+                ====================================
+                """;
         System.out.println(str);
         print("PLEASE ENTER CLIENT ID: ");
         int clientId = input.nextInt();
         ClientsModel client = cc.getClientById(clientId);
-        if(client != null){
+        if (client != null) {
             print("====================================\n");
             System.out.println("CLIENT ID: " + client.getId());
             System.out.println("FIRST NAME: " + client.getFirstName());
@@ -245,32 +247,32 @@ public class MainView {
             System.out.println("ADDRESS: " + client.getAddress());
             List<AccountsModel> accounts = ac.showAllAccountOnThisClient(clientId);
             iterateAccountList(accounts);
-        }else {
+        } else {
             print("CLIENT DOES NOT EXIST...TRY AGAIN!\n");
             addDelay(1);
             clientMenu();
         }
-         navigation();
+        navigation();
     }
-  
-    private void modifyExistingClient(){
+
+    private void modifyExistingClient() {
         boolean isValid = true;
         String str = """
-            ====================================
-            MODIFY EXISTING CLIENT
-            ====================================
-            """;
+                ====================================
+                MODIFY EXISTING CLIENT
+                ====================================
+                """;
         System.out.println(str);
         // TODO: SIMPLIFY THIS
         String modOutput = "PRESS 1 TO UPDATE CLIENT INFO\n"
-                        + "PRESS 2 TO OPEN NEW ACCOUNT\n"
-                        + "PRESS 3 TO DEACTIVATE AN ACCOUNT\n"
-                        + "PRESS 4 TO GO BACK TO THE PREVIOUS MENU\n"
-                        + "PRESS 5 TO LOGOUT\n"
-                        + "ENTER YOUR CHOICE: ";
+                + "PRESS 2 TO OPEN NEW ACCOUNT\n"
+                + "PRESS 3 TO DEACTIVATE AN ACCOUNT\n"
+                + "PRESS 4 TO GO BACK TO THE PREVIOUS MENU\n"
+                + "PRESS 5 TO LOGOUT\n"
+                + "ENTER YOUR CHOICE: ";
         print(modOutput);
-        int opt = input.nextInt();
-        switch (opt){
+        int opt = isANumber();
+        switch (opt) {
             case 1 -> updateClientInfo();
             case 2 -> openNewAccount();
             case 3 -> deleteAccount();
@@ -281,17 +283,18 @@ public class MainView {
                 isValid = false;
             }
         }
-        if(!isValid){
+        if (!isValid) {
             modifyExistingClient();
-        } 
+        }
     }
-    private void updateClientInfo(){
+
+    private void updateClientInfo() {
         print("PLEASE ENTER CLIENT ID: ");
         int clientId = input.nextInt();
-        
+
         // NOTE: GETS THE MATCHING CLIENT ID
         ClientsModel client = cc.getClientById(clientId);
-        if (client != null){
+        if (client != null) {
             print("ENTER NEW FIRST NAME: ");
             String firstName = input.next();
             print("ENTER NEW LAST NAME: ");
@@ -312,64 +315,61 @@ public class MainView {
             addDelay(1);
             updateClientInfo();
         }
-        
 
     }
 
-    public void openNewAccount(){
+    public void openNewAccount() {
         print("PLEASE ENTER CLIENT ID: ");
         int clientId = input.nextInt();
         ClientsModel client = cc.getClientById(clientId);
-        if(client != null){
+        if (client != null) {
 
             client.addAccount(addAccount(clientId));
             cc.createOrUpdateClient(client);
             print("SUCCESSFUL, RETURNING TO THE PREVIOUS MENU\n");
             modifyExistingClient();
-        }
-        else{
+        } else {
             print("CLIENT DOES NOT EXIST...TRY AGAIN!\n");
             addDelay(1);
             updateClientInfo();
         }
-       
+
     }
 
-    private void deleteAccount(){
+    private void deleteAccount() {
         print("PLEASE ENTER CLIENT ID: ");
         int clientId = input.nextInt();
         ClientsModel client = cc.getClientById(clientId);
-        if(client != null){
+        if (client != null) {
             print("WARNING! ONLY ACCOUNT WITH 0 BALANCE CAN BE DEACTIVATED\n");
             List<AccountsModel> accounts = ac.showAllAccountOnThisClient(clientId);
             iterateAccountList(accounts);
-            
+
             print("PLEASE ENTER ACCOUNT NUMBER TO DEACTIVATE: ");
             int accountNumber = input.nextInt();
             boolean hasFoundAccount = false;
-            //REFACTOR:
-            for (AccountsModel account : accounts){
-                if(account.getAccountNumber() == accountNumber){
-                    if (account.getBalance() == 0){
+            // REFACTOR:
+            for (AccountsModel account : accounts) {
+                if (account.getAccountNumber() == accountNumber) {
+                    if (account.getBalance() == 0) {
                         account.setActive(false);
                         ac.createOrUpdateAccount(account);
                         hasFoundAccount = true;
                         break;
-                    }else{
+                    } else {
                         print("FAILED TO DEACTIVATE\n");
                         print("ACCOUNT HAS " + account.getBalance() + " REMAINING BALANCE\n");
                         break;
                     }
                 }
             }
-            if (!hasFoundAccount){
+            if (!hasFoundAccount) {
                 print("ACCOUNT NUMBER DOES NOT EXIST! PLEASE TRY AGAIN!\n");
                 deleteAccount();
             }
 
             modifyExistingClient();
-        }
-        else{
+        } else {
             print("CLIENT DOES NOT EXIST...TRY AGAIN!\n");
             addDelay(1);
             modifyExistingClient();
@@ -378,32 +378,31 @@ public class MainView {
     }
 
     // NOTE: CREATE TRANSACTION
-    // TODO: MAKE THE REST SIMILAR TO THE GO BACK FUNCTION
-    private void doTransaction(){
+    private void doTransaction() {
         String str = """
-            ====================================
-            T R A N S A C T I O N
-            ====================================
-            """;
+                ====================================
+                T R A N S A C T I O N
+                ====================================
+                """;
         System.out.println(str);
         print("PLEASE ENTER CLIENT ID: ");
         int clientId = input.nextInt();
         ClientsModel client = cc.getClientById(clientId);
-        if (client != null){
+        if (client != null) {
             Boolean goBack = false;
             System.out.println("CLIENT NAME : " + client.getFirstName() + " " + client.getLastName());
-            while(!goBack){
+            while (!goBack) {
                 String menuOptions = "PRESS 1 TO WITHDRAW\n"
-                + "PRESS 2 TO DEPOSIT\n"
-                + "PRESS 3 TO TRANSFER\n"
-                + "PRESS 4 TO DEACTIVATE\n"
-                + "PRESS 5 TO TO BACK TO THE PREVIOUS MENU\n"
-                + "PRESS 6 TO LOGOUT\n"
-                + "ENTER YOUR CHOICE : ";
+                        + "PRESS 2 TO DEPOSIT\n"
+                        + "PRESS 3 TO TRANSFER\n"
+                        + "PRESS 4 TO DEACTIVATE\n"
+                        + "PRESS 5 TO TO BACK TO THE PREVIOUS MENU\n"
+                        + "PRESS 6 TO LOGOUT\n"
+                        + "ENTER YOUR CHOICE : ";
                 System.out.println("====================================");
                 print(menuOptions);
                 int choice = input.nextInt();
-                switch(choice){
+                switch (choice) {
                     case 1 -> withdraw(client);
                     case 2 -> deposit(client);
                     case 3 -> transferAmount(client);
@@ -412,9 +411,10 @@ public class MainView {
                         goBack = true;
                     }
                     case 6 -> logout();
+                    default -> print("INVALID INPUT");
                 }
             }
-           
+
         } else {
             print("CLIENT DOES NOT EXIST...TRY AGAIN!\n");
             addDelay(1);
@@ -423,102 +423,101 @@ public class MainView {
         clientMenu();
     }
 
-    public void withdraw(ClientsModel client){
+    public void withdraw(ClientsModel client) {
         boolean hasFoundAccount = false;
         print("PLEASE ENTER ACCOUNT NUMBER: ");
         int accountNumber = input.nextInt();
         List<AccountsModel> accounts = ac.showAllAccountOnThisClient(client.getId());
-        for (AccountsModel account : accounts){
-            if(account.getAccountNumber() == accountNumber){
-                print("CURRENT BALANCE: $" +account.getBalance()+"\n");
+        for (AccountsModel account : accounts) {
+            if (account.getAccountNumber() == accountNumber) {
+                print("CURRENT BALANCE: $" + account.getBalance() + "\n");
                 print("ENTER THE WITHDRAW AMOUNT: ");
                 int amount = input.nextInt();
-                while(!(isAmountValid(amount))){
+                while (!(isAmountValid(amount))) {
                     print("AMOUNT HAVE TO BE MORE THAN 0\n");
                     print("ENTER THE RIGHT DEPOSIT AMOUNT: ");
                     amount = input.nextInt();
                 }
 
                 int withdrawAmount = account.getBalance() - amount;
-                while(!ac.updateAccountBalance(account, withdrawAmount)){
-                    print("YOU CURRENT BALANCE IS $" + account.getBalance() +"\n");
+                while (!ac.updateAccountBalance(account, withdrawAmount)) {
+                    print("YOU CURRENT BALANCE IS $" + account.getBalance() + "\n");
                     print("ENTER THE RIGHT WITHDRAW AMOUNT: ");
                     amount = input.nextInt();
                     withdrawAmount = account.getBalance() - amount;
                 }
                 trc.insertWithdrawTransaction(account, withdrawAmount);
-                
 
-                System.out.println("SUCCESSFULLY WITHDRAWN $" +amount);
+                System.out.println("SUCCESSFULLY WITHDRAWN $" + amount);
                 System.out.println("YOUR NEW BALANCE IS $" + account.getBalance());
                 hasFoundAccount = true;
                 break;
-    
-                } 
+
+            }
         }
-        if (!hasFoundAccount){
+        if (!hasFoundAccount) {
             print("ACCOUNT NUMBER DOES NOT EXIST! PLEASE TRY AGAIN!\n");
-            
+
         }
     }
 
-    public void deposit(ClientsModel client){
+    public void deposit(ClientsModel client) {
         boolean hasFoundAccount = false;
         int newBalance = 0;
         print("PLEASE ENTER ACCOUNT NUMBER: ");
         int accountNumber = input.nextInt();
         List<AccountsModel> accounts = ac.showAllAccountOnThisClient(client.getId());
-        for (AccountsModel account : accounts){
-            if(account.getAccountNumber() == accountNumber){
-                print("CURRENT BALANCE: $" +account.getBalance()+"\n");
+        for (AccountsModel account : accounts) {
+            if (account.getAccountNumber() == accountNumber) {
+                print("CURRENT BALANCE: $" + account.getBalance() + "\n");
                 print("ENTER THE DEPOSIT AMOUNT: ");
                 int depositAmount = input.nextInt();
-                while(!(isAmountValid(depositAmount))){
+                while (!(isAmountValid(depositAmount))) {
                     print("AMOUNT HAVE TO BE MORE THAN 0\n");
                     print("ENTER THE RIGHT DEPOSIT AMOUNT: ");
                     depositAmount = input.nextInt();
                 }
                 newBalance = account.getBalance() + depositAmount;
-                while(!ac.updateAccountBalance(account, newBalance) && depositAmount < 1){
-                    print("YOU CURRENT BALANCE IS $" + account.getBalance() +"\n");
+                while (!ac.updateAccountBalance(account, newBalance) && depositAmount < 1) {
+                    print("YOU CURRENT BALANCE IS $" + account.getBalance() + "\n");
                     print("ENTER THE RIGHT DEPOSIT AMOUNT: ");
                     newBalance = account.getBalance() + depositAmount;
                 }
                 trc.insertDepositTransaction(account, depositAmount);
 
-                System.out.println("SUCCESSFULLY DEPOSITED $" +depositAmount);
+                System.out.println("SUCCESSFULLY DEPOSITED $" + depositAmount);
                 System.out.println("YOUR NEW BALANCE IS $" + account.getBalance());
                 hasFoundAccount = true;
                 break;
-    
-                } 
+
+            }
         }
-        if (!hasFoundAccount){
+        if (!hasFoundAccount) {
             print("ACCOUNT NUMBER DOES NOT EXIST! PLEASE TRY AGAIN!\n");
-            
+
         }
     }
 
-    private void transferAmount(ClientsModel client){
+    private void transferAmount(ClientsModel client) {
         boolean hasFoundAccount = false;
         print("PLEASE ENTER ACCOUNT NUMBER: ");
         int accountNumber = input.nextInt();
         List<AccountsModel> accounts = ac.showAllAccountOnThisClient(client.getId());
-        for (AccountsModel account : accounts){
-            if(account.getAccountNumber() == accountNumber){
+        for (AccountsModel account : accounts) {
+            if (account.getAccountNumber() == accountNumber) {
                 print("PEASE ENTER DESIGNATION ACCOUNT NUMBER: ");
                 int accountNumber2 = input.nextInt();
                 AccountsModel account2 = ac.getAccountByAccountNumber(accountNumber2);
-                while(account2 == null){
+                while (account2 == null) {
                     print("ACCOUNT DOES NOT EXIT, PLEASE TRY AGAIN\n");
-                    print("PLEASE ENTER DESIGNATION ACCOUNT NUMBER:" );
+                    print("PLEASE ENTER DESIGNATION ACCOUNT NUMBER:");
                     accountNumber2 = input.nextInt();
                     account2 = ac.getAccountByAccountNumber(accountNumber2);
                 }
-                print("CURRENT BALANCE: $" +account.getBalance()+"\n");
+                print("CURRENT BALANCE: $" + account.getBalance() + "\n");
                 print("ENTER THE AMOUNT TO BE TRANSFER: ");
                 int amount = input.nextInt();
-                while(!isAmountValid(amount) || account.getBalance() < amount){
+                while (!isAmountValid(amount) || account.getBalance() < amount) {
                     print("CANNOT TRANSFER 0 OR LESS THAN ACCOUNT BALANCE\n");
                     print("ENTER THE RIGHT AMOUNT TO BE TRANSFER: ");
                     amount = input.nextInt();
@@ -528,66 +527,67 @@ public class MainView {
                 ac.updateAccountBalance(account2, account2.getBalance() + amount);
                 trc.insertTransferTransaction(account, account2, amount);
 
-                System.out.println("SUCCESSFULLY TRANSFER $" +amount+ " To ACCOUNT NUMBER: " + account2.getAccountNumber());
+                System.out.println(
+                        "SUCCESSFULLY TRANSFER $" + amount + " To ACCOUNT NUMBER: " + account2.getAccountNumber());
                 System.out.println("YOUR NEW BALANCE IS $" + account.getBalance());
                 hasFoundAccount = true;
                 break;
-    
-                } 
+
+            }
         }
-        if (!hasFoundAccount){
+        if (!hasFoundAccount) {
             print("ACCOUNT NUMBER DOES NOT EXIST! PLEASE TRY AGAIN!\n");
-            
+
         }
-        
+
     }
 
-    public void deactivateAccount(ClientsModel client){
+    public void deactivateAccount(ClientsModel client) {
         boolean hasFoundAccount = false;
         print("PLEASE ENTER ACCOUNT NUMBER TO DEACTIVATE: ");
         int accountNumber = input.nextInt();
         List<AccountsModel> accounts = ac.showAllAccountOnThisClient(client.getId());
-        for (AccountsModel account : accounts){
-            if(account.getAccountNumber() == accountNumber){
-                if(account.getBalance() == 0){
+        for (AccountsModel account : accounts) {
+            if (account.getAccountNumber() == accountNumber) {
+                if (account.getBalance() == 0) {
                     print("ARE YOU SURE YOU WANT TO DEACTIVATE ACCOUNT:(Y/N) ");
-                    if(input.next().equalsIgnoreCase("y")){
+                    if (input.next().equalsIgnoreCase("y")) {
                         account.setActive(false);
                         ac.createOrUpdateAccount(account);
                         hasFoundAccount = true;
                         break;
-                    } 
-                }
-                else {
+                    }
+                } else {
                     hasFoundAccount = true;
                     print("FAILED TO DEACTIVATE\n");
                     print("ACCOUNT HAS " + account.getBalance() + " REMAINING BALANCE\n");
                 }
             }
-          
+
         }
-        if (!hasFoundAccount){
+        if (!hasFoundAccount) {
             print("ACCOUNT NUMBER DOES NOT EXIST! PLEASE TRY AGAIN!\n");
-            
+
         }
     }
-    public void viewAllTransaction(){
+
+    public void viewAllTransaction() {
         String str = """
-            ====================================
-            TRANSACTION REPORT
-            ====================================
-            """;
+                ====================================
+                TRANSACTION REPORT
+                ====================================
+                """;
         System.out.println(str);
         trc.getAllTransaction();
-        while(trc.hasNext()){
+        while (trc.hasNext()) {
             TransactionModel transaction = trc.next();
             System.out.println("====================================");
-            print("TRANSACTION ID  " + transaction.getTransactionId()+"\n");
-            print("TO ACCOUNT NUMBER: " + transaction.getToAccountNumber()+"\n");
-            print("FROM ACCOUNT NUMBER: " + transaction.getFromAccountNumber()+"\n");
-            print("TRANSACTION DETAIL: " + transaction.getTransactionDetail()+"\n");
-            print("VALUE: " + transaction.getValue()+"\n");
-          
+            print("TRANSACTION ID  " + transaction.getTransactionId() + "\n");
+            print("TO ACCOUNT NUMBER: " + transaction.getToAccountNumber() + "\n");
+            print("FROM ACCOUNT NUMBER: " + transaction.getFromAccountNumber() + "\n");
+            print("TRANSACTION DETAIL: " + transaction.getTransactionDetail() + "\n");
+            print("VALUE: " + transaction.getValue() + "\n");
+
         }
         System.out.println("====================================");
     }
@@ -599,8 +599,8 @@ public class MainView {
         System.out.print(data);
     }
 
-      // NOTE: IF BALANCE IS ZERO, DEACTIVATE
-      private boolean isActive(int balance){
+    // NOTE: IF BALANCE IS ZERO, DEACTIVATE
+    private boolean isActive(int balance) {
         return balance > 0;
     }
 
@@ -612,21 +612,22 @@ public class MainView {
             e.printStackTrace();
         }
     }
+
     // NOTE: GET CURRENT DATE
-    private Date getCurrentDate(){
+    private Date getCurrentDate() {
         long now = System.currentTimeMillis();
         Date sqlDate = new Date(now);
         return sqlDate;
     }
 
     // NOTE: CHECK IF THE DEPOSIT AMOUNT IS ZERO
-    public boolean isAmountValid(int amount){
-      return amount > 0;
+    public boolean isAmountValid(int amount) {
+        return amount > 0;
     }
 
     // NOTE: Iterate through account
-    private void iterateAccountList(List<AccountsModel> accounts){
-        for (AccountsModel account : accounts){
+    private void iterateAccountList(List<AccountsModel> accounts) {
+        for (AccountsModel account : accounts) {
             System.out.println("====================================");
             System.out.println("ACCOUNT #: " + account.getAccountNumber());
             System.out.println("ACCOUNT TYPE: " + account.getAccountType());
@@ -636,16 +637,17 @@ public class MainView {
             System.out.println("====================================");
         }
     }
+
     // NOTE: NAVIGATION
-    public void navigation(){
+    public void navigation() {
         String msg = "PRESS 1 PREVIOUS MENU\n"
-        +"PRESS 2 LOGOUT\n"
-        +"ENTER YOUR CHOICE: ";
+                + "PRESS 2 LOGOUT\n"
+                + "ENTER YOUR CHOICE: ";
         print(msg);
         int option = 0;
         try {
             option = input.nextInt();
-            switch(option){
+            switch (option) {
                 case 1 -> clientMenu();
                 case 2 -> logout();
                 default -> {
@@ -653,18 +655,30 @@ public class MainView {
                     navigation();
                 }
             }
-            
-        }
-        catch (Exception e){
+
+        } catch (Exception e) {
             System.out.println("INVALID INPUT! TRY AGAIN!");
             print("\n");
             navigation();
         }
-        
-        
+
     }
 
-    private void logout(){
+    // NOTE: VERIFY INPUT IS A NUMBER
+    public int isANumber() {
+        while (true) {
+            try {
+                return input.nextInt();
+            } catch (InputMismatchException e) {
+                input.next();
+                print("INVALID INPUT, TRY AGAIN: ");
+
+            }
+        }
+    }
+
+    // NOTE: EXIT APPLICATION
+    private void logout() {
         System.out.println("SIGNING OFF!, HAVE A GREAT DAY!");
         System.exit(0);
     }

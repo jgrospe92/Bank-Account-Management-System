@@ -3,6 +3,7 @@
     "java.project.outputPath": "bin",
     "java.project.referencedLibraries": [
         "lib/**/*.jar",
-        "/Users/jeffreygrospe/Library/CloudStorage/OneDrive-VanierCollege/Computec Science 3rd Sem/Programming Patterns/JDBC_DRIVER/sqlite-jdbc-3.36.0.3.jar"
+        "/Users/jeffreygrospe/Library/CloudStorage/OneDrive-VanierCollege/Computec Science 3rd Sem/Programming Patterns/JDBC_DRIVER/sqlite-jdbc-3.36.0.3.jar",
+        "/Users/jeffreygrospe/Documents/JUnit/junit-4.13.2.jar"
     ]
 }
