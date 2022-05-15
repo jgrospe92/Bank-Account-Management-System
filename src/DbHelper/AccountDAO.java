@@ -1,7 +1,6 @@
 package DbHelper;
 
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -25,6 +24,8 @@ public class AccountDAO {
             if (rs.next()){
                 return new AccountsModel(rs);
             }
+            stmt.close();
+          
             return null;
         } catch (SQLException e) {
             System.out.println("Error retrieving account [" + e.getMessage() + "]");
@@ -138,15 +139,6 @@ public class AccountDAO {
          
         }
         
-    }
-
-    
-
-    public static String getDateTime(){
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("YYYY-MM-dd HH:mm:ss");
-        LocalDateTime now = LocalDateTime.now();
-        String date = dtf.format(now);
-        return date;
     }
 
     

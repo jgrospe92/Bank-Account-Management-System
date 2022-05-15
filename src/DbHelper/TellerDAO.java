@@ -144,10 +144,4 @@ public class TellerDAO {
         String date = dtf.format(now);
         return date;
     }
-
-    // DEBUG:
-    public static void main(String[] args) {
-        getTellerByUserAndPass("jgrospe", 1234);
-        updateLoginDate(1111);
-    }   
 }

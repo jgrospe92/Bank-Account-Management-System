@@ -10,7 +10,6 @@ import Controller.AccountController;
 import Controller.ClientController;
 import Controller.TellerController;
 import Controller.TransactionController;
-import DbHelper.AccountDAO;
 import Model.AccountsModel;
 import Model.ClientsModel;
 import Model.TellersModel;
@@ -163,9 +162,9 @@ public class MainView {
         String lastName = onlyCharacters();
         print("ENTER IDENTIFICATION (I-1234): ");
         String identification = identificationFormat();
-        print("ENTER ADDRESS: ");
-        String address = input.next();
         input.nextLine();
+        print("ENTER ADDRESS: ");
+        String address = input.nextLine();
         client = new ClientsModel(id, firstName, lastName, identification, address);
         print("WOULD YOU LIKE TO OPEN AN ACCOUNT NOW? (Y/N)");
         String answer = yesOrNoAnswer();
@@ -325,9 +324,10 @@ public class MainView {
             String lastName = onlyCharacters();
             print("ENTER NEW IDENTIFICATION (I-1234): ");
             String identification = identificationFormat();
-            print("ENTER NEW ADDRESS: ");
-            String address = input.next();
             input.nextLine();
+            print("ENTER NEW ADDRESS: ");
+            String address = input.nextLine();
+            
             client.setFirstName(firstName);
             client.setLastName(lastName);
             client.setIdentification(identification);
@@ -679,8 +679,7 @@ public class MainView {
     // NOTE: GET CURRENT DATE
     private Date getCurrentDate() {
         long now = System.currentTimeMillis();
-        Date sqlDate = new Date(now);
-        return sqlDate;
+        return  new Date(now);
     }
 
     // NOTE: CHECK IF THE DEPOSIT AMOUNT IS ZERO
@@ -787,13 +786,21 @@ public class MainView {
         System.exit(0);
     }
 
-    public static void main(String[] args) {
-
-        MainView v = new MainView();
-        v.printWelcome();
-        v.chooseLanguage();
-        v.tellerLogin();
-        v.clientMenu();
-
+    public void start(){
+        printWelcome();
+        chooseLanguage();
+        tellerLogin();
+        clientMenu();
     }
+
+    // DEBUG:
+    // public static void main(String[] args) {
+
+    //     MainView v = new MainView();
+    //     v.printWelcome();
+    //     v.chooseLanguage();
+    //     v.tellerLogin();
+    //     v.clientMenu();
+
+    // }
 }

@@ -13,7 +13,7 @@ public class TransactionController {
     private int index = -1;
     private int transactionId = 0;
   
-
+    
     // NOTE: ITERATION METHODS 
     public boolean hasNext(){
         return index < storedTransaction.size() -1;
@@ -48,8 +48,8 @@ public class TransactionController {
 
     public List<TransactionModel> getAllTransaction(){
         storedTransaction = TransactionDAO.getAllTransaction();
-        // DEBUG:
-        System.out.println(storedTransaction);
         return storedTransaction;
     }
+
+    
 }

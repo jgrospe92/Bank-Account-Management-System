@@ -2,9 +2,7 @@ package Controller;
 
 import java.util.List;
 
-import DbHelper.AccountDAO;
 import DbHelper.ClientDAO;
-import Model.AccountsModel;
 import Model.ClientsModel;
 
 public class ClientController {
