@@ -36,8 +36,6 @@ public class AccountDAO {
     public static boolean updateBalance(AccountsModel account, int amount){
         if (account == null) {return true;}
         Connection con = DbConnector.createConnection();
-        //int newBalance = account.getBalance() - withdrawAmount;
-        System.out.println(amount);
         try{
             con.setAutoCommit(false);
 

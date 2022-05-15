@@ -20,7 +20,7 @@ public class ClientDAO {
             PreparedStatement stmt = con.prepareStatement(sql);
             stmt.setInt(1, clientId);
             ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
+            if(rs.next()) {
                 return new ClientsModel(rs);
             }
             stmt.close();
