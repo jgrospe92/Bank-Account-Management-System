@@ -15,12 +15,12 @@ public class ClientDAO {
     public static ClientsModel getClientById(int clientId) {
         try {
             Connection con = DbConnector.createConnection();
-            String sql = "SELECT *" +
+            String sql = "SELECT * " +
                     "FROM Clients WHERE ClientId=?";
             PreparedStatement stmt = con.prepareStatement(sql);
             stmt.setInt(1, clientId);
             ResultSet rs = stmt.executeQuery();
-            if(rs.next()) {
+            while(rs.next()) {
                 return new ClientsModel(rs);
             }
             stmt.close();

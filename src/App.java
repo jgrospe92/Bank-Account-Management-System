@@ -3,7 +3,7 @@ import View.MainView;
 public class App {
     public static void main(String[] args){
 
-        /*
+        /* IDE USED: VS CODE
          * TELLER LOGIN
          * username = jgrospe
          * Password = 1234
