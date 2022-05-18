@@ -11,6 +11,7 @@ import java.util.List;
 import Model.TellersModel;
 
 public class TellerDAO {
+    
 
     public static TellersModel getTellerById(int tellerId) {
         try {

@@ -8,10 +8,12 @@ import Model.TellersModel;
 public class TellerController {
     
 
+  
+
     private List<TellersModel> tellers;
     private int index = -1;
 
-    public boolean hasNest(){
+    public boolean hasNext(){
         return index < tellers.size() - 1;
     }
     public TellersModel next(){

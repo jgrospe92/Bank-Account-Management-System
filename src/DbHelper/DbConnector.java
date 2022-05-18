@@ -7,6 +7,8 @@ import java.sql.SQLException;
 public class DbConnector {
     
     private static Connection con;
+
+    
     // Singleton class
     public static Connection createConnection(){
         if(con == null){
