@@ -41,3 +41,15 @@ created.
 - Must make use of at least two design patterns such as Factory Method pattern, Singleton, Strategy, ...
 - The project should be designed using MVC architecture
 - The application should be designed to support two languages, French and English. Make use of I18N Java classes, ResourceBundle and Locale classes. Feel free to add another language of your choice if you want to.
+
+# Database Schema
+<p align="center">
+<img src="src/UML/database.svg" alt="A simple database design" width="600">
+</p>
+
+# MVC AND DATABASE
+<p align="center">
+<img src="src/UML/UML.svg" alt="A simple database design" width="600">
+</p>
+
+

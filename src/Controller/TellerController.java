@@ -6,9 +6,6 @@ import DbHelper.TellerDAO;
 import Model.TellersModel;
 
 public class TellerController {
-    
-
-  
 
     private List<TellersModel> tellers;
     private int index = -1;
