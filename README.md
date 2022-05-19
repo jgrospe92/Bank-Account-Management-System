@@ -52,4 +52,14 @@ created.
 <img src="src/UML/UML.svg" alt="A simple database design" width="600">
 </p>
 
+# DEMO
+To see the demo click this link [DEMO](DEMO.md)
 
+# Takeaways
+- I learned to connect database to java application using sqlite and java sql framework.
+- I learned to implement design patterns and architectural pattern. (SIngleton and MVC Design)
+- I learned how to use internationalization. The user can choose to have the application in English or French.
+
+
+# Found a bug?
+- If you found a bug or have suggestions, please let me know. I would love to hear it.
