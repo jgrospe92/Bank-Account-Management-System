@@ -12,10 +12,11 @@ import Model.TellersModel;
 
 public class TellerDAO {
     
+    private static Connection con;
 
     public static TellersModel getTellerById(int tellerId) {
         try {
-            Connection con = DbConnector.createConnection();
+            con = DbConnector.createConnection();
             String sql = "SELECT *" +
                     "FROM Teller WHERE TellerId=?";
             PreparedStatement stmt = con.prepareStatement(sql);
@@ -34,9 +35,13 @@ public class TellerDAO {
       
     }
 
+    public static void setUpConnection(){
+        con = DbConnector.createConnection();
+    }
+
     public static TellersModel getTellerByUserAndPass(String username, int pass) {
         try {
-            Connection con = DbConnector.createConnection();
+            con = DbConnector.createConnection();
             String sql = "SELECT *" +
                     "FROM Teller WHERE username=? AND  password=?";
             PreparedStatement stmt = con.prepareStatement(sql);
@@ -58,7 +63,7 @@ public class TellerDAO {
         List<TellersModel> tellers = new ArrayList<>();
 
         try {
-            Connection con = DbConnector.createConnection();
+            con = DbConnector.createConnection();
             TellersModel teller = null;
             String sql = "SELECT * FROM Teller ORDER BY 1";
             PreparedStatement stmt = con.prepareStatement(sql);
@@ -76,7 +81,7 @@ public class TellerDAO {
 
     public static void insertNewTeller(TellersModel teller) {
 
-        Connection con = DbConnector.createConnection();
+        con = DbConnector.createConnection();
         try {
             con.setAutoCommit(false);
 
@@ -106,7 +111,7 @@ public class TellerDAO {
 
     public  static void updateLoginDate(int id){
         try {
-            Connection con = DbConnector.createConnection();
+            con = DbConnector.createConnection();
             String sql = "UPDATE Teller SET LastLogin=?"+
                         " WHERE TellerId =?";
             PreparedStatement stmt = con.prepareStatement(sql);
@@ -124,7 +129,7 @@ public class TellerDAO {
     public  static String getFormattedDate(int id){
         String formattedDate = "";
         try {
-            Connection con = DbConnector.createConnection();
+            con = DbConnector.createConnection();
             String sql = "SELECT LastLogin FROM Teller"+
                         " WHERE TellerId =?";
             PreparedStatement stmt = con.prepareStatement(sql);

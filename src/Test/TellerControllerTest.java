@@ -1,76 +1,53 @@
 package Test;
 
-import static org.junit.Assert.assertThrows;
-
 import java.sql.Connection;
-import java.sql.Date;
-import java.sql.DriverManager;
-
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 import Controller.TellerController;
-import DbHelper.DbConnector;
-import DbHelper.TellerDAO;
-import Model.TellersModel;
 
 public class TellerControllerTest {
 
-    TellerController tc;
-
-    @BeforeEach
-    public void setUp(){
-        tc = new TellerController();
-    }
-
+    static TellerController tc;
+    static Connection con;
+ 
 
     @Test
-    public void testFetchAllTellerShouldThrowNullWhenEmpty() {
-        assertThrows(NullPointerException.class, () -> tc.fetchAllTeller());
-
+    void testFetchAllTeller() {
+      
     }
 
     @Test
-    public void testFindTeller() {
-        tc = new TellerController();
-        tc.findTeller(123);
-    }
-
-    @Test
-    public void testGetTellerLastLoginDate() {
+    void testFindTeller() {
 
     }
 
     @Test
-    public void testGetTellers() {
+    void testGetTellerLastLoginDate() {
 
     }
 
     @Test
-    @DisplayName("Should return exception error when Teller list is empty")
-    public void testHasNext() {
-        TellerController tc = new TellerController();
-        Assertions.assertThrows(NullPointerException.class, () -> {
-            tc.hasNext();
-        });
+    void testGetTellers() {
 
     }
 
     @Test
-    public void testNext() {
+    void testHasNext() {
 
     }
 
     @Test
-    public void testUpdateLogin() {
+    void testNext() {
 
     }
 
     @Test
-    public void testVerifyLogin() {
+    void testUpdateLogin() {
+
+    }
+
+    @Test
+    void testVerifyLogin() {
 
     }
 }

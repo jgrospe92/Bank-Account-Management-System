@@ -1,14 +1,9 @@
 {
     "java.project.sourcePaths": ["src"],
     "java.project.outputPath": "bin",
-    "java.project.referencedLibraries": {
-        "include": [
-            "lib/**/*.jar",
-            "/Users/jeffreygrospe/Library/CloudStorage/OneDrive-VanierCollege/Computec Science 3rd Sem/Programming Patterns/JDBC_DRIVER/sqlite-jdbc-3.36.0.3.jar",
-            "/Users/jeffreygrospe/Documents/JUnit/junit-platform-console-standalone-1.8.1.jar"
-        ],
-        "exclude": [
-            "/Users/jeffreygrospe/Documents/JUnit/junit-4.13.2.jar"
-        ]
-    }
+    "java.project.referencedLibraries": [
+        "lib/**/*.jar",
+        "/Users/jeffreygrospe/Library/CloudStorage/OneDrive-VanierCollege/Computec Science 3rd Sem/Programming Patterns/JDBC_DRIVER/sqlite-jdbc-3.36.0.3.jar",
+        "/Users/jeffreygrospe/Documents/JUnit/junit-jupiter-params-5.8.2.jar"
+    ]
 }
