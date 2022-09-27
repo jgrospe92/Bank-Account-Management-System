@@ -799,15 +799,4 @@ public class MainView {
         tellerLogin();
         clientMenu();
     }
-
-    // DEBUG:
-    // public static void main(String[] args) {
-
-    //     MainView v = new MainView();
-    //     v.printWelcome();
-    //     v.chooseLanguage();
-    //     v.tellerLogin();
-    //     v.clientMenu();
-
-    // }
 }
